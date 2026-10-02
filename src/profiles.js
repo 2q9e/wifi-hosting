@@ -132,6 +132,14 @@ export async function createProfileStore() {
       return this.list().find((profile) => profile.id === id);
     },
 
+    getForBroadcast(ids) {
+      const selected = ids.map((id) => profiles.find((profile) => profile.id === id));
+      if (selected.some((profile) => !profile)) {
+        throw Object.assign(new Error("One or more selected names no longer exist."), { statusCode: 404 });
+      }
+      return selected.map((profile) => ({ ...profile }));
+    },
+
     async remove(id) {
       if (!profiles.some((profile) => profile.id === id)) {
         throw Object.assign(new Error("That saved name no longer exists."), { statusCode: 404 });
