@@ -1,0 +1,16 @@
+{
+  "name": "wifi-hosting",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local Wi-Fi profile manager and beacon rotator",
+  "type": "module",
+  "bin": {
+    "Wifi": "./bin/Wifi.js"
+  },
+  "scripts": {
+    "start": "node ./bin/Wifi.js start"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
