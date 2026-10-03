@@ -67,6 +67,7 @@ async function probeSystem() {
     hostapd: findExecutable("hostapd"),
     sudo: findExecutable("sudo"),
     ip: findExecutable("ip"),
+    true: findExecutable("true") || "/usr/bin/true",
   };
 
   if (process.platform !== "linux") {
@@ -447,7 +448,7 @@ export function createBeaconRotator() {
       session = current;
 
       try {
-        await runAsAdmin(current, "/usr/bin/true", []);
+        await runAsAdmin(current, current.paths.true, []);
         await runAsAdmin(current, current.paths.iw, [
           "phy",
           adapter.phy,
