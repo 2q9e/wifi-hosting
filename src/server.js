@@ -89,7 +89,7 @@ export async function createWifiServer({ port = 4173 } = {}) {
     }
 
     const url = new URL(request.url || "/", "http://127.0.0.1:" + port);
-    const pathname = decodeURIComponent(url.pathname);
+    const pathname = url.pathname;
 
     if (request.method === "GET" && pathname === "/api/health") {
       sendJson(response, 200, { ok: true });
