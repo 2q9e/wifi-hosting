@@ -327,15 +327,16 @@ form.addEventListener("submit", async (event) => {
   setPending(true);
   try {
     const route = editingId ? "/api/profiles/" + encodeURIComponent(editingId) : "/api/profiles";
+    const wasEditing = Boolean(editingId);
     const result = await request(route, {
-      method: editingId ? "PUT" : "POST",
+      method: wasEditing ? "PUT" : "POST",
       body: JSON.stringify(body),
     });
     const savedId = result.profile?.id;
     if (savedId) selected.add(savedId);
     resetForm();
     await refreshState();
-    showNotice(editingId ? "Saved name updated." : "Name saved on this device.", "success");
+    showNotice(wasEditing ? "Saved name updated." : "Name saved on this device.", "success");
   } catch (error) {
     showNotice(error.message);
   } finally {
@@ -401,10 +402,7 @@ stopButton.addEventListener("click", async () => {
   }
 });
 
-setInterval(() => {
-  if (broadcast.state !== "stopped") refreshState();
-  else refreshState();
-}, 2500);
+setInterval(() => refreshState(), 2500);
 setInterval(renderBroadcast, 120);
 updateNameCount();
 refreshState({ quiet: false });
