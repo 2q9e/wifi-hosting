@@ -1,20 +1,28 @@
-# WiFi Hoster
+# Wifi Hoster
 
-A local browser app for saving up to 20 Wi-Fi network names and choosing which ones to broadcast. The app binds only to `127.0.0.1`.
-
-Each saved name is an SSID, limited to 32 UTF-8 bytes. Public/private is a label for organizing profiles; it does not change access behavior. Broadcast beacons are open, and the access point rejects every client association. The app does not provide DHCP, internet sharing, or a path for clients to connect.
+A local browser app for saving up to 20 custom Wi-Fi names and broadcasting them as beacon-only SSIDs. Public/private is a label for organizing profiles; it does not change radio behavior. No passwords are collected, no DHCP or internet sharing is configured, and client associations are rejected.
 
 ## Run
 
-Install Node.js, `iw`, and `hostapd`, then link the local command from this folder:
+Requirements: Node.js 20+, Linux with an AP-capable Wi-Fi adapter, `iw`, `hostapd`, and `sudo`.
+
+On Fedora, install hostapd if it is missing:
+
+```sh
+sudo dnf install hostapd
+```
+
+From this project folder, register the command and start the frontend:
 
 ```sh
 npm link
 Wifi start
 ```
 
-`Wifi start` opens the frontend. The server stays attached to the terminal; press Ctrl+C to stop it and any active broadcast. On Linux, run `sudo -v` in a terminal before starting a broadcast so the app can create a temporary AP interface and run `hostapd` with administrator privileges. Broadcasting is unavailable on systems without Linux AP mode, `iw`, or `hostapd`.
+The app opens at `http://127.0.0.1:4173` and stays attached to the terminal. Press Ctrl+C to close it. Before broadcasting, run `sudo -v` in a terminal so the app can create a temporary AP interface and launch hostapd without saving or requesting a password in the app.
 
-The number of simultaneous SSIDs is limited by the wireless adapter. On the adapter available during development, Linux reports a maximum of two AP interfaces. Profiles remain saved even when they are not being broadcast.
+## How broadcasting works
 
-No Wi-Fi passwords are collected or stored. Broadcasting is opt-in from the frontend and ends when you stop it or exit the server.
+The built-in radio sends one selected name at a time and rotates through the selection. Each profile gets a distinct local BSSID, so nearby Wi-Fi scanners can distinguish the names as they cycle. A scanner may need a full rotation to discover every name. The radio cannot send all 20 names simultaneously: the adapter available during development reports at most two AP interfaces and does not advertise multiple-BSSID support. The app uses one AP interface and needs no additional radio.
+
+Beacons are open so the names appear in Wi-Fi scans. The hostapd access-control list rejects every client association. Public/private remains a display label only. Profiles are saved on this device in `~/.wifi-hosting/profiles.json`.
